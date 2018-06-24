@@ -20,7 +20,7 @@ class SMSC(object):
         self.lineid = lineid
         self.apiversion = apiversion
     
-    def _urlPY3(self, cmd, **kwargs):
+    def _urlPY2(self, cmd, **kwargs):
         url = 'https://www.smsc.com.ar/api/{}/?alias={}&apikey={}&cmd={}'.format(self.apiversion,
                                                                                  self.alias,
                                                                                  self.apikey,
