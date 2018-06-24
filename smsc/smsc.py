@@ -5,7 +5,7 @@ import requests
 import urllib
 
 from smsc.validations import validate_phone_number
-
+import six
 
 class SMSC(object):
     def __init__(self, alias, apikey, apiversion='0.3', lineid=None):
@@ -19,8 +19,18 @@ class SMSC(object):
         self.apikey = apikey
         self.lineid = lineid
         self.apiversion = apiversion
-
-    def _url(self, cmd, **kwargs):
+    
+    def _urlPY3(self, cmd, **kwargs):
+        url = 'https://www.smsc.com.ar/api/{}/?alias={}&apikey={}&cmd={}'.format(self.apiversion,
+                                                                                 self.alias,
+                                                                                 self.apikey,
+                                                                                 cmd)
+    
+        for k,v in dict(kwargs.items())).iteritems():
+            url+='&{}={}'.format(k,v)        
+        return url
+    
+    def _urlPY3(self, cmd, **kwargs):
         url = 'https://www.smsc.com.ar/api/{}/?'.format(self.apiversion)
         params = {
             'alias': self.alias,
@@ -41,6 +51,28 @@ class SMSC(object):
         validate_phone_number(area_code, local_number)
         kwargs = {
             'num': '{}-{}'.format(area_code, local_number),
+            'msj': msg
+        }
+        if time:
+            kwargs['time'] = time
+        if six.PY2:
+            url=self._urlPY2(cmd='enviar', **kwargs)
+        else:
+            url=self._urlPY3(cmd='enviar', **kwargs)
+        r = requests.get(url)
+        return r.json()
+    
+    def send_whitout_area(self, number, msg, time=None):
+        """
+        :param area_code: area code to send sms
+        :param local_number: local number to send sms
+        :param msg: message to send
+        :param time: time to send sms (optional)
+        :return: JSON
+        """
+        validate_phone_number(area_code, local_number)
+        kwargs = {
+            'num': '{}'.format(number),
             'msj': msg
         }
         if time:
