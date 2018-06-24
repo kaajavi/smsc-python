@@ -26,7 +26,7 @@ class SMSC(object):
                                                                                  self.apikey,
                                                                                  cmd)
     
-        for k,v in dict(kwargs.items())).iteritems():
+        for k,v in dict(kwargs.items()).iteritems():
             url+='&{}={}'.format(k,v)        
         return url
     
